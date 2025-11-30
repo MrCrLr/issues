@@ -23,6 +23,14 @@ defmodule Issues.CLI do
 
   def process({user, project, _count}) do
     Issues.GithubIssues.fetch(user, project)
+    |> sort_into_descending_order()
+  end
+
+  def sort_into_descending_order(list_of_issues) do
+    list_of_issues
+    |> Enum.sort(fn i1, i2 ->
+          i1["created_at"] >= i2["created_at"]
+       end)
   end
 
   @doc """
