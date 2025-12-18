@@ -1,5 +1,7 @@
 defmodule Issues.CLI do
 
+  import Issues.TableFormatter, only: [print_table_for_columns: 2]
+
   @default_count 4
 
   @moduledoc """
@@ -8,7 +10,7 @@ defmodule Issues.CLI do
   table of the last _n_ issues in a github project
   """
 
-  def run(argv) do 
+  def main(argv) do 
     argv
     |> parse_args()
     |> process
@@ -21,9 +23,13 @@ defmodule Issues.CLI do
     System.halt(0)
   end
 
-  def process({user, project, _count}) do
-    Issues.GithubIssues.fetch(user, project)
+  def process({user, project, count}) do
+    {:ok, issues} = Issues.GithubIssues.fetch(user, project)
+
+    issues
     |> sort_into_descending_order()
+    |> last(count)
+    |> print_table_for_columns(["number", "created_at", "title"])
   end
 
   def sort_into_descending_order(list_of_issues) do
@@ -31,6 +37,12 @@ defmodule Issues.CLI do
     |> Enum.sort(fn i1, i2 ->
           i1["created_at"] >= i2["created_at"]
        end)
+  end
+
+  def last(list, count) do
+    list
+    |> Enum.take(count)
+    |> Enum.reverse()
   end
 
   @doc """
