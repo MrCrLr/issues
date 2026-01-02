@@ -3,16 +3,5 @@ defmodule Issues do
   Documentation for `Issues`.
   """
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Issues.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
+  defdelegate main(argv), to: Issues.CLI
 end
