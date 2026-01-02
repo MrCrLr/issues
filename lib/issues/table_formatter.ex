@@ -18,13 +18,33 @@ defmodule Issues.TableFormatter do
          puts_in_columns(data_by_columns, format)
     end
   end
+  @doc """
+  Given a list of rows, where each row contains a keyed list
+  of columns, return a list containing lists of the data in
+  each column. The `headers` parameter contains the
+  list of columns to extract.
 
+  ## Example
+      iex> list = [Enum.into([{"a", "1"},{"b", "2"},{"c", "3"}], %{}),
+      ...> Enum.into([{"a", "4"},{"b", "5"},{"c", "6"}], %{})]
+      iex> Issues.TableFormatter.split_into_columns(list, [ "a", "b", "c" ])
+      [ ["1", "4"], ["2", "5"], ["3", "6"] ]
+  """
   def split_into_columns(rows, headers) do
     for header <- headers do
       for row <- rows, do: printable(row[header], header)
     end
   end
 
+  @doc """
+  Return a binary (string) version of our parameter.
+
+  ## Example
+      iex> Issues.TableFormatter.printable("a", "title")
+      "a"
+      iex> Issues.TableFormatter.printable(99, "created_at")
+      "99"
+  """
   def printable(value, header) do
     string = to_string(value)
     max = max_width(header)
